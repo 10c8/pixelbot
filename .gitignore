@@ -1,0 +1,8 @@
+__pycache__
+config.ini
+*.json
+*.json.bkp
+*.log
+/plugins/__pycache__
+/plugins/PixelChallenges.py
+/plugins/AntiVPN.py
