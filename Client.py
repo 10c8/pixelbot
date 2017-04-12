@@ -138,14 +138,14 @@ class Client(discord.Client):
 
                         break
 
-    async def on_member_join(self, sv, user):
+    async def on_member_join(self, user):
         # Run plugins "on_member_join" functions
         for plugin in self.bot.plugins.values():
             await plugin.on_member_join(self, user)
 
         logging.info('User {}#{} joined.'.format(user.name, user.id))
 
-    async def on_member_remove(self, sv, user):
+    async def on_member_remove(self, user):
         # Run plugins "on_member_remove" functions
         for plugin in self.bot.plugins.values():
             await plugin.on_member_remove(self, user)

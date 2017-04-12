@@ -1,0 +1,144 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 2em;
+    margin-top: -1em;
+    width: 40%;
+    margin-left: -20%;
+    line-height: 2em;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    font-size: 100%;
+    background-color: #181425;
+}
+
+.privacy-policy{
+    font-size: 20px;
+    padding: 5px;
+
+}
+
+a:hover {
+    color: #2C6EB0;
+    text-decoration: none;
+    font-weight: normal;
+}
+
+.check-box{
+    width: 15px;
+    height: 15px;
+    margin: 10px;
+    background-color:transparent;
+    border-radius:50px;
+    border:2px solid #ffffff;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-family:Arial;
+    font-size:17px;
+    padding:10px 25px 10px 20px;
+    text-decoration:none;
+    outline: none;
+}
+
+.center {
+    text-align: center
+}
+
+p,
+h5,
+h4,
+h3,
+h2,
+h1 {
+    color: white;
+}
+
+.submit {
+    width: 20%;
+    min-width: 110px;
+    margin: 10px;
+  	background-color:transparent;
+  	border-radius:50px;
+  	border:2px solid #ffffff;
+  	display:inline-block;
+  	cursor:pointer;
+  	color:#ffffff;
+  	font-family:Arial;
+  	font-size:17px;
+  	padding:10px 25px 10px 20px;
+  	text-decoration:none;
+    outline: none;
+    transition: 400ms all ease;
+}
+
+.submit:hover,
+.submit:focus,
+.submit:active {
+    transition: 400ms all ease;
+    width: 30%;
+    color: white;
+    text-decoration:none;
+    background-color:transparent;
+}
+
+.input {
+    height: 40px;
+    width: 30%;
+    min-width: 175px;
+    transition: 500ms all ease;
+    padding: 4px;
+    font-size: 20px;
+    /*padding-left: 20px;*/
+    border: none;
+    margin: auto;
+    border-radius: 50px;
+    text-align: center
+}
+.input:hover,
+.input:focus {
+    width: 40%;
+    transition: 400ms all ease;
+    background-size: 25px 25px;
+    padding: 4px;
+    vertical-align: middle;
+    /*padding-left: 20px;*/
+    outline: none;
+}
+
+.result{
+    margin-top: 10px;
+    font-size: 40px;
+}
+
+.high{
+    color: #ff5454;
+}
+.low{
+    color: #4aff5f;
+}
+.medium{
+    color: #ffe34a;
+}
+
+.logo {
+    width: 90%;
+    height: 90%;
+    min-width: 410px;
+    min-height: 137px;
+}
+
+.logo-small {
+    width: 45%;
+    height: 45%;
+    min-width: 205px;
+    min-height: 67px;
+
+}
+.disabled {
+    display: none;
+}

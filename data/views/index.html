@@ -3,58 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>PixelArt 2-Step Verification</title>
-
-    <script src="/static/js/jquery-3.2.1.min.js"></script>
-    <script src="/static/js/bootstrap-pincode-input.js"></script>
-
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/css/bootstrap-pincode-input.css" rel="stylesheet">
-
-    <style>
-    body {
-        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
-        font-size: 100%;
-        background-color: #181425;
-    }
-
-    .content {
-        width: 256px;
-        height: 128px;
-        padding: 10px;
-        text-align: center;
-        vertical-align: middle;
-        display: table-cell;
-        margin: 0;
-    }
-
-    .content span {
-        color: #888;
-        font-size: 11px;
-    }
-
-    .logo {
-        margin-bottom: 10px;
-    }
-
-    .disabled {
-        display: none;
-    }
-    </style>
+    <script src="static/js/jquery-3.2.1.min.js"></script>
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/style.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400', rel='stylesheet', type='text/css'>
 </head>
 <body>
-    <div class="content">
-        <div class="logo">
-            <image src="static/img/logo.gif" width="512" height="128"/>
-        </div>
+    <div class="center">
+        <img src="static/img/tsv.png" class ="logo"></img>
         <div class="form">
-            <image src="static/img/pin.png" width="512" height="64"/>
-            <input type="text" id="pin"></input>
+            <h4 style="margin-top: 0px;">Enter Your Pin Below</h4>
+            <input type="text" id="pin" class="input code"/><br/><a class="submit check-button">Check</a>
+            <div class ="privacy-policy">
+                <p><input class="check-box" type="checkbox">I agree to the <a href="/privacy" class="link">Privacy Policy</a>.</p>
+            </div>
+            <div class="results"></div>
         </div>
-        <div class="done disabled">
-            <image src="static/img/done.png" width="512" height="128"/>
-        </div>
-    </content>
-
+    </div>
     <script src="static/js/main.js"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
  # Protects the server from VPN/proxy users.
  #
  # author William F., Henry Jeff
- # version 0.2
+ # version 0.3
  # copyright MIT
 ##
 
@@ -16,7 +16,7 @@ import json
 import requests
 import threading
 from datetime import datetime, timedelta
-from random import randrange
+from random import randint
 from bottle import route, post, request, static_file, run
 
 
@@ -24,18 +24,16 @@ from bottle import route, post, request, static_file, run
 class __plugin__(api.Plugin):
     global __plugin__, api
     global discord, json, requests, threading, datetime, timedelta
-    global randrange, route, post, request, static_file, run
+    global randint, route, post, request, static_file, run
 
     name = 'TwoStep'
     description = 'Protects the server from VPN/proxy users.'
-    version = '0.1'
+    version = '0.3'
     author = 'William F.'
     default_data = {
-        'codes': {
-            '203366055161233408': '123456'
-        },
+        'codes': {},
         'ok': [],
-        'msgs': []
+        'bad': []
     }
 
     def __init__(self, bot):
@@ -43,11 +41,6 @@ class __plugin__(api.Plugin):
 
     # Methods
     async def on_ready(self, client):
-        # TODO:
-        # [x] Webserver
-        # [x] PIN-code verification
-        # [x] IP check
-
         self.log('Initializing...')
 
         @route('/')
@@ -94,7 +87,8 @@ class __plugin__(api.Plugin):
                     }
                 else:
                     # Check for a proxy IP
-                    if float(check['result']) > 0.99:
+                    if float(check['result']) > 0.99 or\
+                       check['BadIP'] == 1:
                         # Bad IP, tell the mods
                         self.data['bad'].append(uid)
 
@@ -103,10 +97,11 @@ class __plugin__(api.Plugin):
                             'error': (
                                 'Our system detected that you might be'
                                 ' using a proxy, which is not allowed'
-                                ' in this server. If that was a mistake'
-                                ', don\'t worry; our mods will catch it'
-                                ' and verify you manually if that\'s the'
-                                ' case. Just be patient.'
+                                ' in this server. If you believe that'
+                                ' this was a mistake, don\'t worry; our'
+                                ' mods will catch it and verify you'
+                                ' manually if that\'s the case. Just be'
+                                ' patient.'
                             )
                         }
                     else:
@@ -123,7 +118,7 @@ class __plugin__(api.Plugin):
 
         try:
             threading.Thread(target=run,
-                             kwargs=dict(host='localhost',
+                             kwargs=dict(host='0.0.0.0',
                                          port=8080)).start()
             self.log('Done.')
         except Exception as e:
@@ -137,40 +132,41 @@ class __plugin__(api.Plugin):
         # Server
         sv = list(client.servers)[0]
 
-        # Channel used for verification
-        auth_ch = discord.Object(id=self.getConfig('auth_ch'))
-
         # Role used for verification
-        unverified = client.get_role(server=sv,
-                                     name=self.getConfig('unverified_role'))
+        unverified = discord.Role(server=sv,
+                                  id=self.getConfig('unverified_role'))
 
         # Set them to "Unverified" as soon as they join
         await client.add_roles(user, unverified)
 
         # Generate their PIN-code
-        pin = ''
+        pin = ''.join([str(randint(0, 9)) for _ in range(6)])
         while pin in self.data['codes'].values():
-            pin = ''.join([randint(0, 9) for _ in range(6)])
+            pin = ''.join([str(randint(0, 9)) for _ in range(6)])
 
         self.data['codes'][str(user.id)] = pin
 
         self.log('[pin] {} ({}): {}'.format(user.name, user.id, pin))
 
         # Send the help message
-        auth_msg = self.getConfig('auth_msg')
+        auth_msg = (
+            'Welcome to the Pixel Art server, <@{id}>!\n\n'
+            'Due to recent ban circumvention issues caused by malicious'
+            ' users, we are sorry to inform you that we now require'
+            ' newcomers to confirm their account via the following'
+            ' procedure:\n\n'
+            '**1.** Visit the following link:'
+            ' http://108.14.46.160:8080/?uid={id}\n'
+            '**2.** Enter the following generated PIN-code: ***{code}***\n'
+            '**3.** Done! :smiley:'
+        )
 
-        info = await client.send_message(auth_ch, auth_msg.format(
+        await client.send_message(user, auth_msg.format(
             id=user.id,
             code=' '.join(list(pin))
         ))
 
-        self.data['msgs'].append(info)
-
-    async def on_message(self, client, msg):
-        auth_ch = discord.Object(id=self.getConfig('auth_ch'))
-
-        if msg.channel != auth_ch:
-            return
+        # self.saveData()
 
     # Utils
     def check_ip(self, ip):
@@ -200,7 +196,7 @@ class __plugin__(api.Plugin):
             return result
 
     # Tasks
-    @api.task('VerifyUsers', 1, alive=False)
+    @api.task('VerifyUsers', 1)
     async def task_VerifyUsers(self, client):
         await client.wait_until_ready()
 
@@ -208,13 +204,24 @@ class __plugin__(api.Plugin):
         sv = list(client.servers)[0]
 
         # Welcome channel
-        welcome_ch = discord.Object(server=sv,
-                                    id=self.getConfig('welcome_ch'))
+        welcome_ch = discord.Object(id=self.getConfig('welcome_ch'))
+        mods_ch = discord.Object(id=self.getConfig('mods_ch'))
 
         for i, uid in enumerate(self.data['ok']):
             user = sv.get_member(uid)
+
+            # Role used for verification
+            verified = discord.Role(server=sv,
+                                    id=self.getConfig('verified_role'))
+
+            # Verify user
+            await client.replace_roles(user, verified)
+
+            # And greet them
             await client.send_message(welcome_ch,
-                                      self.getConfig('welcome_msg'))
+                                      self.getConfig('welcome_msg')
+                                      .format(username=user.id,
+                                              number=sv.member_count))
             await client.send_message(user, self.getConfig('welcome_pm'))
 
             self.data['ok'][i] = ''
@@ -222,8 +229,8 @@ class __plugin__(api.Plugin):
         for i, uid in enumerate(self.data['bad']):
             user = sv.get_member(uid)
             await client.send_message(mods_ch,
-                                      'User `{}` requires verification.'
-                                      .format(user.nickname or user.name))
+                                      'User <@{}> requires verification.'
+                                      .format(user.id))
 
             self.data['bad'][i] = ''
 

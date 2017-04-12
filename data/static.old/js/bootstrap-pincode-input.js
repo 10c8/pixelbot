@@ -48,7 +48,7 @@
 		$.extend(Plugin.prototype, {
 				init: function () {
 					this.buildInputBoxes();
-					
+
 				},
 		        updateOriginalInput:function(){
 		        	var newValue = "";
@@ -91,20 +91,20 @@
 					// make sure this is the first password field here
 					if(this.settings.hidedigits){
 							this._pwcontainer = $('<div />').css("display", "none").appendTo(this._container);
-							this._pwfield = $('<input>').attr({'type':'password','pattern': "[0-9]*", 'inputmode':"numeric",'id':'preventautofill','autocomplete':'off'}).appendTo(this._pwcontainer);
+							this._pwfield = $('<input>').attr({'type':'text','pattern': "[0-9]*", 'inputmode':"numeric",'id':'preventautofill','autocomplete':'off'}).appendTo(this._pwcontainer);
 					}
 
 					if(this._isTouchDevice()){
 						// set main class
 						$(this._container).addClass("touch");
-						
+
 						// For touch devices we build a html table directly under the pincode textbox. The textbox will become transparent
 						// This table is used for styling only, it will display how many 'digits' the user should fill in.
 						// With CSS letter-spacing we try to put every digit visually insize each table cell.
-						
+
 						var wrapper = $('<div />').addClass('touchwrapper touch'+this.settings.inputs).appendTo(this._container);
 						var input = $('<input>').attr({'type':'number','pattern': "[0-9]*", 'inputmode':"numeric",'maxlength':this.settings.inputs,'autocomplete':'off'}).addClass('form-control pincode-input-text').appendTo(wrapper);
-		        		
+
 						var touchtable = $('<table>').addClass('touchtable').appendTo(wrapper);
 						var row = $('<tr/>').appendTo(touchtable);
 						// create touch background elements (for showing user how many digits must be entered)
@@ -113,11 +113,11 @@
 								$('<td/>').addClass('last').appendTo(row);
 							}else{
 								$('<td/>').appendTo(row);
-							}							
-						}						
+							}
+						}
 						if(this.settings.hidedigits){
 							// hide digits
-		        			input.attr('type','password');
+		        			input.attr('type','text');
 		        		}else{
 							// show digits, also include default value
 							input.val(currentValue[i]);
@@ -133,7 +133,7 @@
 			        		var input = $('<input>').attr({'type':'text','maxlength':"1",'autocomplete':'off'}).addClass('form-control pincode-input-text').appendTo(this._container);
 			        		if(this.settings.hidedigits){
 										// hide digits
-			        			input.attr('type','password');
+			        			input.attr('type','text');
 			        		}else{
 								// show digits, also include default value
 								input.val(currentValue[i]);
@@ -141,6 +141,7 @@
 
 			        		if(i==0){
 			        			input.addClass('first');
+								input.focus();
 			        		}else if(i==(this.settings.inputs-1)){
 			        			input.addClass('last');
 			        		}else{
@@ -204,14 +205,14 @@
 							if(this._isTouchDevice()){
 								if(e.keyCode  == 8 || e.keyCode  == 46){
 									// do nothing on backspace and delete
-									
+
 								}else{
 									if($(this.element).val().length == this.settings.inputs){
 										e.preventDefault();
 									    e.stopPropagation();
 									}
 								}
-						
+
 							}
 
 						 this.settings.keydown(e);
@@ -232,26 +233,26 @@
 		        				}
 		        			}
 	        			}
-	        			
+
 						// update original input box
 	        			this.updateOriginalInput();
 
 	        			if(this.check()){
 	        				this.settings.complete($(this.element).val(), e, this._error);
 	        			}
-	        			
+
 	        			// prevent more input for touch device (we can't limit it)
 						if(this._isTouchDevice()){
 							if(e.keyCode  == 8 || e.keyCode  == 46){
-								// do nothing on backspace and delete								
+								// do nothing on backspace and delete
 							}else{
 								if($(this.element).val().length == this.settings.inputs){
 								    $(e.currentTarget).blur();
 								}
 							}
-					
+
 						}
-	        			
+
 			        },this));
 				}
 
