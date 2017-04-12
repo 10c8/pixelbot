@@ -70,7 +70,13 @@ class Plugin(object):
         return self.bot.cfg.get(key, section=self.name)
 
     def log(self, message):
-        logging.info('[{}] {}'.format(self.name, message))
+        logging.info('[INFO][{}] {}'.format(self.name, message))
+
+    def warning(self, message):
+        logging.critical('[WARN][{}] {}'.format(self.name, message))
+
+    def critical(self, message):
+        logging.critical('[FAIL][{}] {}'.format(self.name, message))
 
     def generateHelp(self, mod=False):
         info = (
