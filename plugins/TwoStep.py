@@ -1,10 +1,10 @@
 #: vim set encoding=utf-8 :
 ##
  # TwoStep Plugin
- # Protects the server from VPN/proxy users.
+ # Protects the server from malicious users.
  #
  # author William F., Henry Jeff
- # version 0.3
+ # version 0.41
  # copyright MIT
 ##
 
@@ -27,8 +27,8 @@ class __plugin__(api.Plugin):
     global randint, route, post, request, static_file, run
 
     name = 'TwoStep'
-    description = 'Protects the server from VPN/proxy users.'
-    version = '0.3'
+    description = 'Protects the server from malicious users.'
+    version = '0.41'
     author = 'William F.'
     default_data = {
         'codes': {},
@@ -46,6 +46,10 @@ class __plugin__(api.Plugin):
         @route('/')
         def index():
             return static_file('index.html', root='data/views/')
+
+        @route('/privacy')
+        def index():
+            return static_file('privacy-policy.html', root='data/views/')
 
         @route('/static/<filepath:path>')
         def server_static(filepath):
@@ -73,7 +77,7 @@ class __plugin__(api.Plugin):
                 ip = forwarded_addr or remote_addr
 
                 # Check it on the database
-                check = self.check_ip(ip)
+                check = self.check_ip(uid, ip)
 
                 if not check:
                     result = {
@@ -156,20 +160,20 @@ class __plugin__(api.Plugin):
             ' newcomers to confirm their account via the following'
             ' procedure:\n\n'
             '**1.** Visit the following link:'
-            ' http://108.14.46.160:8080/?uid={id}\n'
+            ' http://pixelverify.tk:8080/?uid={id}\n'
             '**2.** Enter the following generated PIN-code: ***{code}***\n'
             '**3.** Done! :smiley:'
         )
 
         await client.send_message(user, auth_msg.format(
             id=user.id,
-            code=' '.join(list(pin))
+            code=pin
         ))
 
         # self.saveData()
 
     # Utils
-    def check_ip(self, ip):
+    def check_ip(self, uid, ip):
         ip_api = (
             'http://check.getipintel.net/check.php?'
             'ip={ip}'
@@ -192,7 +196,13 @@ class __plugin__(api.Plugin):
         else:
             # Request successful
             result = json.loads(r.text)
-            self.log('IP check for {} returned "{}".'.format(ip, result))
+            safe_data = {
+                'proxy': result['result'],
+                'bad': result['BadIP']
+            }
+
+            # Doesn't log your IP
+            self.log('IP check for {} returned "{}".'.format(uid, safe_data))
             return result
 
     # Tasks
@@ -220,7 +230,7 @@ class __plugin__(api.Plugin):
             # And greet them
             await client.send_message(welcome_ch,
                                       self.getConfig('welcome_msg')
-                                      .format(username=user.id,
+                                      .format(uid=user.id,
                                               number=sv.member_count))
             await client.send_message(user, self.getConfig('welcome_pm'))
 

@@ -28,6 +28,13 @@ class Client(discord.Client):
         logging.info('Connected to Discord server as {}#{}.'
                      .format(self.user.name, self.user.id))
 
+        # Change "playing" status
+        # await bot.change_presence(
+        #     game=discord.Game(name='{}help'.format(
+        #                           self.bot.settings['options']['prefix']
+        #                       )),
+        #     status=discord.Status.online)
+
         # Run plugins "on_ready" functions
         for plugin in self.bot.plugins.values():
             await plugin.on_ready(self)
@@ -108,7 +115,7 @@ class Client(discord.Client):
                     await self.send_message(msg.channel, info)
                 elif len(args) == 1:
                     # Plugin help message
-                    plugin_name = args[0]
+                    plugin_name = args[0].lower()
 
                     if plugin_name not in self.bot.plugins.keys():
                         await self.send_message(msg.channel,

@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var pin = code;
 
         $.post(
-            'http://108.14.46.160:8080/auth',
+            'http://pixelverify.tk:8080/auth',
             {
                 'uid': uid,
                 'pin': pin
@@ -50,7 +50,7 @@ function appendToResults(text, importance) {
         shouldClear = false;
     }
 
-    var data = '<p class="result ' + importance + '" style="width: 40px;margin-top: 30px;">' + text + '</p>';
+    var data = '<p class="result ' + importance + '" style="font-size: 30px;margin-top: 10px; line-height: 100%;">' + text + '</p>';
     $(data).appendTo('.results').hide().fadeIn('slow');
     shouldClear = true;
 }

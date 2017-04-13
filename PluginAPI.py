@@ -88,7 +88,7 @@ class Plugin(object):
             name=self.name,
             desc=self.description,
             version=self.version,
-            cmds=self.generateHelp()
+            cmds='...'
         )
 
         return info
