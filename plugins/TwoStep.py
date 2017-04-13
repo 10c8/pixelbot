@@ -15,7 +15,6 @@ import discord
 import json
 import requests
 import threading
-from datetime import datetime, timedelta
 from random import randint
 from bottle import route, post, request, static_file, run
 
@@ -23,8 +22,8 @@ from bottle import route, post, request, static_file, run
 # Plugin code
 class __plugin__(api.Plugin):
     global __plugin__, api
-    global discord, json, requests, threading, datetime, timedelta
-    global randint, route, post, request, static_file, run
+    global discord, json, requests, threading, randint
+    global route, post, request, static_file, run
 
     name = 'TwoStep'
     description = 'Protects the server from malicious users.'

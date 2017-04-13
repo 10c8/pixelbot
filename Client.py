@@ -3,7 +3,7 @@
  # file: Client.py
  # The bridge between Discord and bot plugins
  #
- # version 0.2
+ # version 0.3
  # author William F.
  # copyright MIT
 ##
@@ -29,11 +29,11 @@ class Client(discord.Client):
                      .format(self.user.name, self.user.id))
 
         # Change "playing" status
-        # await bot.change_presence(
-        #     game=discord.Game(name='{}help'.format(
-        #                           self.bot.settings['options']['prefix']
-        #                       )),
-        #     status=discord.Status.online)
+        await self.change_presence(
+            game=discord.Game(name='{}help'.format(
+                                  self.bot.settings['options']['prefix']
+                              )),
+            status=discord.Status.online)
 
         # Run plugins "on_ready" functions
         for plugin in self.bot.plugins.values():
@@ -45,13 +45,13 @@ class Client(discord.Client):
 
         for plugin in self.bot.plugins.values():
             for task in plugin.tasks.values():
-                logging.info('{}:'.format(task.name))
+                info = '{}.{}: '.format(plugin.name, task.name)
 
                 try:
                     self.loop.create_task(task.run(self))
-                    logging.info('Ok.')
+                    logging.info(info + 'Ok.')
                 except Exception as e:
-                    logging.critical('Failed.')
+                    logging.critical(info + 'Failed.')
                     logging.critical(e)
                     print('Error registering plugin task "{}".'
                           .format(task.name))
@@ -135,10 +135,22 @@ class Client(discord.Client):
                 # Parse a plugin command
                 for plugin in self.bot.plugins.values():
                     if cmd.group('command').lower() in plugin.cmds:
-                        result = await plugin.cmds[name](plugin,
-                                                         self,
-                                                         msg,
-                                                         args)
+                        name = cmd.group('command').lower()
+                        func = None
+
+                        if plugin.cmds[name]['type'] == 'cmd':
+                            func = plugin.cmds[name]['func']
+                        else:
+                            if len(args) >= 1:
+                                sub = args[0]
+                                ns = plugin.cmds[name]
+
+                                if sub in ns:
+                                    func = ns[sub]['func']
+                                    args = args[1:]
+
+                        if func is not None:
+                            result = await func(plugin, self, msg, args)
 
                         if result is not None:
                             logging.info('-> {}'.format(result))

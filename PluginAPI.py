@@ -70,13 +70,13 @@ class Plugin(object):
         return self.bot.cfg.get(key, section=self.name)
 
     def log(self, message):
-        logging.info('[INFO][{}] {}'.format(self.name, message))
+        logging.info('[{}][INFO] {}'.format(self.name, message))
 
     def warning(self, message):
-        logging.critical('[WARN][{}] {}'.format(self.name, message))
+        logging.critical('[{}][WARN] {}'.format(self.name, message))
 
     def critical(self, message):
-        logging.critical('[FAIL][{}] {}'.format(self.name, message))
+        logging.critical('[{}][FAIL] {}'.format(self.name, message))
 
     def generateHelp(self, mod=False):
         info = (
@@ -172,13 +172,25 @@ def task(name, interval, alive=True):
 
 
 # Command decorator
-def command(name, mod=False):
+def command(name, mod=False, ns=None):
     def wrapper(func):
         def wrapped(*args):
-            if mod:
-                args[0].mod_cmds[name] = func
+            cmd = {
+                'type': 'cmd',
+                'func': func,
+                'mod': mod
+            }
+
+            if ns is None:
+                args[0].cmds[name] = cmd
             else:
-                args[0].cmds[name] = func
+                if ns not in args[0].cmds.keys():
+                    args[0].cmds[ns] = {
+                        'type': 'ns',
+                        name: cmd
+                    }
+                else:
+                    args[0].cmds[ns][name] = cmd
 
             if args[1]:
                 func(*args)

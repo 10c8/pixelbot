@@ -88,20 +88,20 @@ class Bot(object):
             if to_load[name] != 'true':
                 continue
 
-            try:
-                loc = {}
-                exec(open('./plugins/{}.py'.format(name)).read(), loc, {})
+            # try:
+            loc = {}
+            exec(open('./plugins/{}.py'.format(name)).read(), loc, {})
 
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
-                    plugin = loc['__plugin__'](self)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                plugin = loc['__plugin__'](self)
 
-                self.plugins[plugin.name.lower()] = plugin
-            except Exception as e:
-                logging.critical('Failed to load plugin "{}".'.format(name))
-                logging.critical(e)
-                print('Failed to load plugin "{}".'.format(name))
-                exit(1)
+            self.plugins[plugin.name.lower()] = plugin
+            # except Exception as e:
+            #     logging.critical('Failed to load plugin "{}".'.format(name))
+            #     logging.critical(e)
+            #     print('Failed to load plugin "{}".'.format(name))
+            #     exit(1)
 
     def saveData(self):
         logging.info('Data save requested, making a backup...')
