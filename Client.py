@@ -136,18 +136,38 @@ class Client(discord.Client):
                 for plugin in self.bot.plugins.values():
                     if cmd.group('command').lower() in plugin.cmds:
                         name = cmd.group('command').lower()
+                        obj = plugin.cmds[name]
                         func = None
 
-                        if plugin.cmds[name]['type'] == 'cmd':
-                            func = plugin.cmds[name]['func']
+                        # Is it a simple command or a part of a namespace?
+                        if obj['type'] == 'cmd':
+                            # Simple command
+                            func = obj['func']
+                            mod_only = obj['mod']
                         else:
+                            # Namespace
                             if len(args) >= 1:
                                 sub = args[0]
-                                ns = plugin.cmds[name]
 
-                                if sub in ns:
-                                    func = ns[sub]['func']
+                                if sub in obj:
+                                    func = obj[sub]['func']
+                                    mod_only = obj[sub]['mod']
                                     args = args[1:]
+
+                        if mod_only:
+                            # Don't parse if user isn't a mod
+                            roles = plugin.bot.settings['discord']['mod_roles']
+                            auth = False
+
+                            try:
+                                for role in msg.author.roles:
+                                    if role.name in roles:
+                                        auth = True
+
+                                if not auth:
+                                    break
+                            except:
+                                break
 
                         if func is not None:
                             result = await func(plugin, self, msg, args)

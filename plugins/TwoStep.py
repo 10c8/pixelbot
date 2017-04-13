@@ -246,3 +246,7 @@ class __plugin__(api.Plugin):
         # Clean the OK and BAD lists
         self.data['ok'] = [x for x in self.data['ok'] if x != '']
         self.data['bad'] = [x for x in self.data['bad'] if x != '']
+
+    @api.command('ping', mod=True, ns='test')
+    async def cmd_ping(self, client, msg, args):
+        await client.send_message(msg.channel, 'Pong!')
