@@ -189,14 +189,20 @@ class Client(discord.Client):
         for plugin in self.bot.plugins.values():
             await plugin.on_member_join(self, user)
 
-        logging.info('User {}#{} joined.'.format(user.name, user.id))
+        try:
+            logging.info('User {}#{} joined.'.format(user.name, user.id))
+        except:
+            pass
 
     async def on_member_remove(self, user):
         # Run plugins' "on_member_remove" functions
         for plugin in self.bot.plugins.values():
             await plugin.on_member_remove(self, user)
 
-        logging.info('User {}#{} left.'.format(user.name, user.id))
+        try:
+            logging.info('User {}#{} left.'.format(user.name, user.id))
+        except:
+            pass
 
     async def on_member_update(self, before, after):
         # Run plugins' "on_member_update" functions

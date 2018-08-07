@@ -16,13 +16,14 @@ import os
 import random
 import requests
 import shutil
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 # Plugin code
 class __plugin__(api.Plugin):
     global __plugin__, api
     global discord, face_recognition, os, random, requests, shutil, Image
+    global ImageOps
 
     name = 'Carterfy'
     description = 'Turns people at an image into random Carters.'
@@ -59,6 +60,9 @@ class __plugin__(api.Plugin):
                                       'Please attach an image to the command.')
             return
 
+        self.data['image_id'] += 1
+        self.saveData()
+
         attachment = msg.attachments[0]
         url = attachment['url']
         extension = attachment['filename'].rpartition('.')[-1]
@@ -77,9 +81,6 @@ class __plugin__(api.Plugin):
             await client.send_message(msg.channel,
                                       'Oops, something went wrong! Try again please.')
             return
-
-        self.data['image_id'] += 1
-        self.saveData()
 
         # Recognize faces in the image
         image = face_recognition.load_image_file(org_name)
@@ -101,11 +102,15 @@ class __plugin__(api.Plugin):
                 face_image = Image.fromarray(image[top:bottom, left:right])
                 face_w, face_h = face_image.size
 
-                carter_image = carter_image.resize((face_w + 60, face_h + 60),
+                carter_image = carter_image.resize((face_w + 50, face_h + 50),
                                                    Image.NEAREST)
 
+                # 50% chance of mirroring it
+                if random.randint(0, 1) == 0:
+                    carter_image = ImageOps.mirror(carter_image)
+
                 # Then paste it on top of the face
-                original.paste(carter_image, (left - 30, top - 30), carter_image)
+                original.paste(carter_image, (left - 25, top - 25), carter_image)
 
             # Then save and send back the result
             out_name = '{}/images/{}_out.png'.format(self.getDataFolder(),
