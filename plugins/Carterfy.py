@@ -4,7 +4,7 @@
  # Turns people at an image into random Carters.
  #
  # author William F.
- # version 0.01
+ # version 0.02
 ##
 
 # Imports
