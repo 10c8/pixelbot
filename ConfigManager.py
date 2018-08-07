@@ -31,13 +31,11 @@ class ConfigManager(object):
         try:
             value = self.parser.get(section, key)
         except configparser.NoSectionError:
-            msg = ('WARN: Section {} not found in the settings. Value for '
-                   '{} set to {}.').format(section, key, default)
-            print(msg)
+            print(('WARN: Section {} not found in the settings. Value for '
+                   '{} set to {}.').format(section, key, default))
         except configparser.NoOptionError:
-            msg = ('WARN: Option {} not found in the settings. '
-                   'Set to {}.').format(key, default)
-            print(msg)
+            print(('WARN: Option {} not found in the settings. '
+                   'Set to {}.').format(key, default))
         except:
             raise
         else:

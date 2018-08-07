@@ -69,6 +69,9 @@ class Plugin(object):
     def getConfig(self, key):
         return self.bot.cfg.get(key, section=self.name)
 
+    def getDataFolder(self):
+        return './data/' + self.name.lower()
+
     def log(self, message):
         logging.info('[{}][INFO] {}'.format(self.name, message))
 
@@ -79,16 +82,32 @@ class Plugin(object):
         logging.critical('[{}][FAIL] {}'.format(self.name, message))
 
     def generateHelp(self, mod=False):
+        cmds = ''
+
+        for name in self.cmds:
+            item = self.cmds[name]
+
+            if item['type'] == 'ns':
+                for func in item:
+                    if func == 'type':
+                        continue
+
+                    doc = item[func]['func'].__doc__
+                    cmds += '&{} {}: {}\n'.format(name, func, doc)
+            else:
+                doc = item['func'].__doc__
+                cmds += '&{}: {}\n'.format(name, doc)
+
         info = (
             '**{name}**\n'
             '*{desc}*\n\n'
             'Version: {version}\n'
-            'Commands:```{cmds}```'
+            'Commands:```css\n{cmds}```'
         ).format(
             name=self.name,
             desc=self.description,
             version=self.version,
-            cmds='...'
+            cmds=cmds
         )
 
         return info

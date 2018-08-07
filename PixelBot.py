@@ -27,6 +27,8 @@ class Bot(object):
         self.data = {}
         self.plugins = {}
 
+        print('[PixelBot v0.4]\n')
+
         # Set up logging
         logging.basicConfig(filename='pixelbot.log',
                             format='[%(asctime)-15s] %(message)s',
@@ -35,12 +37,12 @@ class Bot(object):
         logging.info('Pixel Bot initialized.')
 
         # Load configuration
-        logging.info('Loading configuration file.')
+        logging.info('Loading configuration file...')
         self.cfg = ConfigManager('./config.ini')
 
         # Load settings
-        logging.info('Loading settings.')
-        print('Loading settings.')
+        logging.info('Loading settings...')
+        print('Loading settings...')
 
         self.settings = {
             'discord': {
@@ -57,8 +59,8 @@ class Bot(object):
         }
 
         # Load bot data
-        logging.info('Loading data.')
-        print('Loading data.')
+        logging.info('Loading data...')
+        print('Loading data...')
 
         self.data = json.loads(open('./data.json').read())
 
@@ -88,20 +90,20 @@ class Bot(object):
             if to_load[name] != 'true':
                 continue
 
-            # try:
-            loc = {}
-            exec(open('./plugins/{}.py'.format(name)).read(), loc, {})
+            try:
+                loc = {}
+                exec(open('./plugins/{}.py'.format(name)).read(), loc, {})
 
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                plugin = loc['__plugin__'](self)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    plugin = loc['__plugin__'](self)
 
-            self.plugins[plugin.name.lower()] = plugin
-            # except Exception as e:
-            #     logging.critical('Failed to load plugin "{}".'.format(name))
-            #     logging.critical(e)
-            #     print('Failed to load plugin "{}".'.format(name))
-            #     exit(1)
+                self.plugins[plugin.name.lower()] = plugin
+            except Exception as e:
+                logging.critical('Failed to load plugin "{}".'.format(name))
+                logging.critical(e)
+                print('Failed to load plugin "{}".'.format(name))
+                exit(1)
 
     def saveData(self):
         logging.info('Data save requested, making a backup...')

@@ -24,7 +24,7 @@ class Client(discord.Client):
         self.bot = bot
 
     async def on_ready(self):
-        print('Bot connected. ({})'.format(self.user.id))
+        print('Bot connected. (#{})'.format(self.user.id))
         logging.info('Connected to Discord server as {}#{}.'
                      .format(self.user.name, self.user.id))
 
@@ -57,15 +57,18 @@ class Client(discord.Client):
                           .format(task.name))
                     exit(1)
 
-        logging.info('Done.')
-        print('Done.')
+        logging.info('All done.')
+        print('All done.')
 
     async def on_message(self, msg):
-        # Run plugins "on_message" functions
+        # Run plugins' "on_message" functions
         for plugin in self.bot.plugins.values():
             await plugin.on_message(self, msg)
 
         # Parse the message
+        if len(msg.content) == 0:
+            return
+
         if msg.content[0] == self.bot.settings['options']['prefix']:
             if not msg.channel.is_private:
                 logging.info('#{} ({} #{}): {}'.format(msg.channel.name,
@@ -78,6 +81,10 @@ class Client(discord.Client):
                                                       msg.content))
 
             cmd = self.bot.cmd_regex.search(msg.content)
+
+            if cmd is None:
+                return
+
             name = cmd.group('command').lower()
             args = cmd.group('args')
 
@@ -98,10 +105,10 @@ class Client(discord.Client):
                         plugins += '{} [{}]\n'.format(pl.name, pl.version)
 
                     info = (
-                        '**PixelBot Help**\n'
+                        '.\n'
                         'Version: {version}\n'
                         'Installed plugins:```{plugins}```'
-                        'Commands: ```'
+                        'Commands: ```css'
                         '{prefix}help [plugin] - Shows this message, or'
                         ' the plugin\'s help message if the "plugin" option'
                         ' is not empty.'
@@ -178,20 +185,20 @@ class Client(discord.Client):
                         break
 
     async def on_member_join(self, user):
-        # Run plugins "on_member_join" functions
+        # Run plugins' "on_member_join" functions
         for plugin in self.bot.plugins.values():
             await plugin.on_member_join(self, user)
 
         logging.info('User {}#{} joined.'.format(user.name, user.id))
 
     async def on_member_remove(self, user):
-        # Run plugins "on_member_remove" functions
+        # Run plugins' "on_member_remove" functions
         for plugin in self.bot.plugins.values():
             await plugin.on_member_remove(self, user)
 
         logging.info('User {}#{} left.'.format(user.name, user.id))
 
     async def on_member_update(self, before, after):
-        # Run plugins "on_member_update" functions
+        # Run plugins' "on_member_update" functions
         for plugin in self.bot.plugins.values():
             await plugin.on_member_update(self, before, after)
